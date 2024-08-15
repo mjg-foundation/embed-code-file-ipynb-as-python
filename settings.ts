@@ -6,12 +6,14 @@ export interface EmbedCodeFileSettings {
 	includedLanguages: string;
 	titleBackgroundColor: string;
 	titleFontColor: string;
+	displayIpynbAsPython: boolean;
 }
 
 export const DEFAULT_SETTINGS: EmbedCodeFileSettings = {
-	includedLanguages: 'c,cs,cpp,java,python,go,ruby,javascript,js,typescript,ts,shell,sh,bash',
+	includedLanguages: 'c,cs,cpp,java,python,go,ruby,javascript,js,typescript,ts,shell,sh,bash,ipynb',
 	titleBackgroundColor: "#00000020",
-	titleFontColor: ""
+	titleFontColor: "",
+	displayIpynbAsPython: true
 }
 
 export class EmbedCodeFileSettingTab extends PluginSettingTab {
@@ -48,7 +50,7 @@ export class EmbedCodeFileSettingTab extends PluginSettingTab {
 					this.plugin.settings.titleFontColor = value;
 					await this.plugin.saveSettings();
 				}));
-		  
+
 		new Setting(containerEl)
 			.setName('Background color of title')
 			.addText(text => text
@@ -58,5 +60,16 @@ export class EmbedCodeFileSettingTab extends PluginSettingTab {
 					this.plugin.settings.titleBackgroundColor = value;
 					await this.plugin.saveSettings();
 				}));
+
+		new Setting(containerEl)
+			.setName('Display .ipynb as python')
+            .setDesc('Parse .ipynb files to extract and display their python source code.')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.displayIpynbAsPython)
+				.onChange(async (value) => {
+					this.plugin.settings.displayIpynbAsPython = value;
+					await this.plugin.saveSettings();
+				}));
+
 	}
 }

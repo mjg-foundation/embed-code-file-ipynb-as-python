@@ -30,6 +30,36 @@ export default class EmbedCodeFile extends Plugin {
 		await this.saveData(this.settings);
 	}
 
+	//TODO: split functionality into separate file
+	convertLang(lang: string): string {
+		if (lang === 'ipynb' && this.settings.displayIpynbAsPython) {
+			return 'python'
+		}
+		return lang
+	}
+
+	parseSpecial(lang: string, src: string): string {
+		if (lang === 'ipynb' && this.settings.displayIpynbAsPython) {
+			let code = ""
+			try {
+				let notebook = JSON.parse(src);
+				if (Array.isArray(notebook.cells)) {
+					notebook.cells.forEach((cell: any) => {
+						if (cell.cell_type === 'code' && Array.isArray(cell.source)) {
+							code += cell.source.join('')
+						}
+					});
+				} else {
+					console.error('No cells found in the notebook.');
+				}
+			} catch (error) {
+				console.error("Invalid JSON string:", error);
+			}
+			return code
+		}
+		return src
+	}
+
 	async registerRenderer(lang: string) {
 		this.registerMarkdownCodeBlockProcessor(`embed-${lang}`, async (meta, el, ctx) => {
 			let fullSrc = ""
@@ -80,11 +110,11 @@ export default class EmbedCodeFile extends Plugin {
 			if (srcLinesNumString) {
 				srcLinesNum = analyseSrcLines(srcLinesNumString)
 			}
-
+			let parsedSrc = this.parseSpecial(lang, fullSrc)
 			if (srcLinesNum.length == 0) {
-				src = fullSrc
+				src = parsedSrc
 			} else {
-				src = extractSrcLines(fullSrc, srcLinesNum)
+				src = extractSrcLines(parsedSrc, srcLinesNum)
 			}
 
 			let title = metaYaml.TITLE
@@ -92,7 +122,8 @@ export default class EmbedCodeFile extends Plugin {
 				title = srcPath
 			}
 
-			await MarkdownRenderer.renderMarkdown('```' + lang + '\n' + src + '\n```', el, '', this)
+			let srcBlock = '```' + this.convertLang(lang) + '\n' + src + '\n```'
+			await MarkdownRenderer.renderMarkdown(srcBlock, el, '', this)
 			this.addTitleLivePreview(el, title);
 		});
 	}
