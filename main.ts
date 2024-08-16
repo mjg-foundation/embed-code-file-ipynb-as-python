@@ -1,7 +1,7 @@
 import { Plugin, MarkdownRenderer, TFile, MarkdownPostProcessorContext, MarkdownView, parseYaml, requestUrl} from 'obsidian';
 import { EmbedCodeFileSettings, EmbedCodeFileSettingTab, DEFAULT_SETTINGS} from "./settings";
 import { analyseSrcLines, extractSrcLines} from "./utils";
-import { createCodeParser, CodeParser } from "./code-parser.ts";
+import { createCodeParser, CodeParser } from "./code-parser";
 
 export default class EmbedCodeFile extends Plugin {
 	settings: EmbedCodeFileSettings;
@@ -84,7 +84,7 @@ export default class EmbedCodeFile extends Plugin {
 			}
 
 
-			let parsedSrc: string = codeParser.parseCode(fullSrc)
+			let parsedSrc: any = codeParser.parseCode(fullSrc)
 			if (parsedSrc instanceof Error) {
 				const errMsg = `\`ERROR: ${parsedSrc.message}\``
 				await MarkdownRenderer.renderMarkdown(errMsg, el, '', this)
