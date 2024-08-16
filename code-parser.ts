@@ -9,7 +9,7 @@ export interface CodeParser {
 export function createCodeParser(inputLanguage: string, settings: EmbedCodeFileSettings): CodeParser {
 	switch (inputLanguage) {
 		case "ipynb":
-			return new IpynbParser(settings.displayIpynbAsPython);
+			return new IpynbParser(settings.displayIpynbAsPython, settings.showIpynbCellNumbers);
 			break;
 		default:
 			return new DefaultParser(inputLanguage);
@@ -18,9 +18,11 @@ export function createCodeParser(inputLanguage: string, settings: EmbedCodeFileS
 
 export class IpynbParser implements CodeParser {
 	private enabled: boolean;
+	private cellNumbers: boolean;
 
-	constructor(enabled: boolean) {
+	constructor(enabled: boolean, cellNumbers: boolean) {
 		this.enabled = enabled;
+		this.cellNumbers = cellNumbers;
 	}
 
 	parseCode(src: string): string {
@@ -56,12 +58,15 @@ export class IpynbParser implements CodeParser {
 		}
 
 		codeBlocks.forEach((block: string, index: number) => {
-			if (codeBlocks.length != 1) {
+			if (codeBlocks.length != 1 && this.cellNumbers) {
 				code += `# Cell ${index + 1}:\n\n`;
 			}
 			code += block;
 			if (index !== codeBlocks.length - 1) {
-				code += "\n\n";
+				code += "\n";
+				if (this.cellNumbers) {
+					code += "\n";
+				}
 			}
 		});
 
