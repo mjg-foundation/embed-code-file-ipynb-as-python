@@ -1,7 +1,7 @@
 import { EmbedCodeFileSettings } from "./settings";
 
 export interface CodeParser {
-	parseCode: (code: string) => string;
+	parseCode: (code: string) => string | Error;
 	getOutputLanguage: () => string;
 }
 
@@ -25,7 +25,7 @@ export class IpynbParser implements CodeParser {
 		this.cellNumbers = cellNumbers;
 	}
 
-	parseCode(src: string): string {
+	parseCode(src: string): string | Error {
 		if (!this.enabled) {
 			return src;
 		}
@@ -36,7 +36,7 @@ export class IpynbParser implements CodeParser {
 		try {
 			notebook = JSON.parse(src);
 		} catch (error) {
-			return "Improperly formatted .ipynb file";
+			return new Error("Improperly formatted .ipynb file");
 		}
 
 		let codeBlocks: string[] = [];
@@ -50,11 +50,11 @@ export class IpynbParser implements CodeParser {
 				}
 			});
 		} else {
-			return "No cells found in the notebook";
+			return new Error("No cells found in the notebook");
 		}
 
 		if (codeBlocks.length === 0) {
-			return "No code cells in the notebook";
+			return new Error("No code cells in the notebook");
 		}
 
 		codeBlocks.forEach((block: string, index: number) => {

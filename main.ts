@@ -83,7 +83,14 @@ export default class EmbedCodeFile extends Plugin {
 				srcLinesNum = analyseSrcLines(srcLinesNumString)
 			}
 
+
 			let parsedSrc: string = codeParser.parseCode(fullSrc)
+			if (parsedSrc instanceof Error) {
+				const errMsg = `\`ERROR: ${parsedSrc.message}\``
+				await MarkdownRenderer.renderMarkdown(errMsg, el, '', this)
+				return
+			}
+
 			if (srcLinesNum.length == 0) {
 				src = parsedSrc
 			} else {
