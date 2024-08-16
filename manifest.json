@@ -5,6 +5,6 @@
 	"minAppVersion": "0.15.0",
 	"description": "This is a plugin for Obsidian that allows for embedding code files.",
 	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
+	"authorUrl": "https://github.com/mjg-foundation",
 	"isDesktopOnly": false
 }
