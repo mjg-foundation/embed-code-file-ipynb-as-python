@@ -1,6 +1,8 @@
-# Embed Code File (Obsidian Plugin)
+# Embed Code File with Jupyter Notebook Support (Obsidian Plugin)
 
 This plugin allows to embed code files from Obsidian vault or remote file (eg., GitHub). It works better with live preview feature of Obsidian. This version can parse Jupyter Notebook files and display them as normal Python code.
+
+The original was created by @almariah here: [Embed Code File](https://github.com/almariah/embed-code-file)
 
 ## Settings
 
