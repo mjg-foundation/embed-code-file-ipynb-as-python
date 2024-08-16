@@ -1,6 +1,7 @@
 import { Plugin, MarkdownRenderer, TFile, MarkdownPostProcessorContext, MarkdownView, parseYaml, requestUrl} from 'obsidian';
 import { EmbedCodeFileSettings, EmbedCodeFileSettingTab, DEFAULT_SETTINGS} from "./settings";
 import { analyseSrcLines, extractSrcLines} from "./utils";
+import { createCodeParser, CodeParser } from "./code-parser.ts";
 
 export default class EmbedCodeFile extends Plugin {
 	settings: EmbedCodeFileSettings;
@@ -30,40 +31,11 @@ export default class EmbedCodeFile extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	//TODO: split functionality into separate file
-	convertLang(lang: string): string {
-		if (lang === 'ipynb' && this.settings.displayIpynbAsPython) {
-			return 'python'
-		}
-		return lang
-	}
-
-	parseSpecial(lang: string, src: string): string {
-		if (lang === 'ipynb' && this.settings.displayIpynbAsPython) {
-			let code = ""
-			try {
-				let notebook = JSON.parse(src);
-				if (Array.isArray(notebook.cells)) {
-					notebook.cells.forEach((cell: any) => {
-						if (cell.cell_type === 'code' && Array.isArray(cell.source)) {
-							code += cell.source.join('')
-						}
-					});
-				} else {
-					console.error('No cells found in the notebook.');
-				}
-			} catch (error) {
-				console.error("Invalid JSON string:", error);
-			}
-			return code
-		}
-		return src
-	}
-
 	async registerRenderer(lang: string) {
 		this.registerMarkdownCodeBlockProcessor(`embed-${lang}`, async (meta, el, ctx) => {
 			let fullSrc = ""
 			let src = ""
+			let codeParser: CodeParser = createCodeParser(lang, this.settings)
 
 			let metaYaml: any
 			try {
@@ -110,7 +82,7 @@ export default class EmbedCodeFile extends Plugin {
 			if (srcLinesNumString) {
 				srcLinesNum = analyseSrcLines(srcLinesNumString)
 			}
-			let parsedSrc = this.parseSpecial(lang, fullSrc)
+			let parsedSrc = codeParser.parseCode(fullSrc)
 			if (srcLinesNum.length == 0) {
 				src = parsedSrc
 			} else {
@@ -122,7 +94,7 @@ export default class EmbedCodeFile extends Plugin {
 				title = srcPath
 			}
 
-			let srcBlock = '```' + this.convertLang(lang) + '\n' + src + '\n```'
+			let srcBlock = '```' + codeParser.getOutputLanguage() + '\n' + src + '\n```'
 			await MarkdownRenderer.renderMarkdown(srcBlock, el, '', this)
 			this.addTitleLivePreview(el, title);
 		});
