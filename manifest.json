@@ -1,7 +1,7 @@
 {
-	"id": "embed-code-file-ipynb-as-python",
-	"name": "Embed Code File with Jupyter Notebook Support",
-	"version": "1.0.1",
+	"id": "embed-code-file",
+	"name": "Embed Code File",
+	"version": "1.2.0",
 	"minAppVersion": "0.15.0",
 	"description": "This is a plugin for Obsidian that allows for embedding code files.",
 	"author": "Obsidian",
