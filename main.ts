@@ -82,7 +82,8 @@ export default class EmbedCodeFile extends Plugin {
 			if (srcLinesNumString) {
 				srcLinesNum = analyseSrcLines(srcLinesNumString)
 			}
-			let parsedSrc = codeParser.parseCode(fullSrc)
+
+			let parsedSrc: string = codeParser.parseCode(fullSrc)
 			if (srcLinesNum.length == 0) {
 				src = parsedSrc
 			} else {

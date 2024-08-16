@@ -29,20 +29,42 @@ export class IpynbParser implements CodeParser {
 		}
 
 		let code = ""
+
+		let notebook;
 		try {
-			let notebook = JSON.parse(src);
-			if (Array.isArray(notebook.cells)) {
-				notebook.cells.forEach((cell: any) => {
-					if (cell.cell_type === 'code' && Array.isArray(cell.source)) {
-						code += cell.source.join('')
-					}
-				});
-			} else {
-				console.error('No cells found in the notebook.');
-			}
+			notebook = JSON.parse(src);
 		} catch (error) {
-			console.error("Invalid JSON string:", error);
+			return "Improperly formatted .ipynb file";
 		}
+
+		let codeBlocks: string[] = [];
+		if (Array.isArray(notebook.cells) && notebook.cells.length !== 0) {
+			notebook.cells.forEach((cell: any) => {
+				if (cell.cell_type === 'code' && Array.isArray(cell.source)) {
+					let codeBlock = cell.source.join('');
+					if (codeBlock.length > 0) {
+						codeBlocks.push(codeBlock);
+					}
+				}
+			});
+		} else {
+			return "No cells found in the notebook";
+		}
+
+		if (codeBlocks.length === 0) {
+			return "No code cells in the notebook";
+		}
+
+		codeBlocks.forEach((block: string, index: number) => {
+			if (codeBlocks.length != 1) {
+				code += `# Cell ${index + 1}:\n\n`;
+			}
+			code += block;
+			if (index !== codeBlocks.length - 1) {
+				code += "\n\n";
+			}
+		});
+
 		return code
 	}
 
