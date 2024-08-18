@@ -17,8 +17,15 @@ First you need to activate the plugin from Community Plugins. Then you can embed
 PATH: "vault://<some-path-to-code-file>" or "http[s]://<some-path-to-remote-file>"
 LINES: "<some-line-number>,<other-number>,...,<some-range>"
 TITLE: "<some-title>"
+ARGS: "<some-args>"
 ```
 ````
+
+The filetypes below accept args that control how their code is embedded.
+| Filetype | ARGS                            | Optional? | Example |
+| -------- | ------------------------------- | --------- | ------- |
+| .ipynb   | List of cell numbers to display | Yes       | "1,2,5" |
+
 
 Examples:
 
