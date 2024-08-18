@@ -83,7 +83,7 @@ export default class EmbedCodeFile extends Plugin {
 				srcLinesNum = analyseSrcLines(srcLinesNumString)
 			}
 
-			let args: string = null
+			let args: string = "";
 			if (metaYaml.ARGS) {
 				args = metaYaml.ARGS.toString()
 			}
