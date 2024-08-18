@@ -30,7 +30,7 @@ export class IpynbParser implements CodeParser {
 			return src;
 		}
 
-		let keep_cells = [];
+		let keep_cells: number[] = [];
 		if (args) {
 			const regex = /^(\d+)(,\d+)*$/;
 			if (regex.test(args)) {
