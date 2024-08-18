@@ -1,7 +1,7 @@
 import { EmbedCodeFileSettings } from "./settings";
 
 export interface CodeParser {
-	parseCode: (code: string) => string | Error;
+	parseCode: (code: string, args: string) => string | Error;
 	getOutputLanguage: () => string;
 }
 
@@ -25,9 +25,19 @@ export class IpynbParser implements CodeParser {
 		this.cellNumbers = cellNumbers;
 	}
 
-	parseCode(src: string): string | Error {
+	parseCode(src: string, args: string): string | Error {
 		if (!this.enabled) {
 			return src;
+		}
+
+		let keep_cells = [];
+		if (args) {
+			const regex = /^(\d+)(,\d+)*$/;
+			if (regex.test(args)) {
+				keep_cells = args.split(",").map(value => parseInt(value));
+			} else {
+				return new Error("Cell numbers should be a list of comma-separated, 1-based numbers, with no spaces, in quotes");
+			}
 		}
 
 		let code = ""
@@ -41,8 +51,10 @@ export class IpynbParser implements CodeParser {
 
 		let codeBlocks: string[] = [];
 		if (Array.isArray(notebook.cells) && notebook.cells.length !== 0) {
-			notebook.cells.forEach((cell: any) => {
-				if (cell.cell_type === 'code' && Array.isArray(cell.source)) {
+			notebook.cells.forEach((cell: any, index: number) => {
+				if (cell.cell_type === 'code' && Array.isArray(cell.source)
+						&& (keep_cells.length === 0 ||
+							(keep_cells.length > 0 && keep_cells.includes(index + 1)))) {
 					let codeBlock = cell.source.join('');
 					if (codeBlock.length > 0) {
 						codeBlocks.push(codeBlock);
@@ -88,7 +100,7 @@ export class DefaultParser implements CodeParser {
 		this.inputLanguage = inputLanguage;
 	}
 
-	parseCode(src: string): string {
+	parseCode(src: string, args: string): string {
 		return src;
 	}
 

@@ -83,8 +83,7 @@ export default class EmbedCodeFile extends Plugin {
 				srcLinesNum = analyseSrcLines(srcLinesNumString)
 			}
 
-
-			let parsedSrc: any = codeParser.parseCode(fullSrc)
+			let parsedSrc: any = codeParser.parseCode(fullSrc, metaYaml.ARGS.toString())
 			if (parsedSrc instanceof Error) {
 				const errMsg = `\`ERROR: ${parsedSrc.message}\``
 				await MarkdownRenderer.renderMarkdown(errMsg, el, '', this)
