@@ -21,12 +21,6 @@ ARGS: "<some-args>"
 ```
 ````
 
-The filetypes below accept args that control how their code is embedded.
-| Filetype | ARGS                            | Optional? | Example |
-| -------- | ------------------------------- | --------- | ------- |
-| .ipynb   | List of cell numbers to display | Yes       | "1,2,5" |
-
-
 Examples:
 
 #### Vault File:
@@ -65,6 +59,12 @@ You can use also `TITLE` with normal code block (without `embed-`), but make sur
 ...
 ```
 ````
+
+The filetypes below accept args that control how their code is embedded.
+| Filetype | ARGS                            | Optional? | Example |
+| -------- | ------------------------------- | --------- | ------- |
+| .ipynb   | List of cell numbers to display | Yes       | "1,2,5" |
+
 
 Using live preview feature will enhance the embedding experience.
 
